@@ -1,6 +1,6 @@
-# Tic-Tac-Toe Multiplayer Distributed System
+# Tic-Tac-Toe
 
-Um sistema completo de jogo da velha multiplayer em rede desenvolvido com arquitetura distribuída, seguindo boas práticas de programação, segurança e padrões de design.
+Um jogo da velha multiplayer em rede, implementado com arquitetura distribuída. O sistema foi projetado com foco em organização do código, segurança das interações e aplicação de padrões de design, resultando em uma solução robusta e bem estruturada.
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -367,4 +367,3 @@ Para dúvidas ou problemas:
 - Verifique a documentação
 - Consulte os logs do sistema
 - Abra uma issue no repositório
-
