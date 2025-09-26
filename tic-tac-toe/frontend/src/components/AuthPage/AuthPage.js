@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   AuthContainer,
@@ -15,6 +15,13 @@ import {
   Button,
   ToggleContainer,
   ToggleButton,
+  ToastCorner,
+  ToastCard,
+  ToastIconCircle,
+  ToastTitle,
+  ToastMessage,
+  ToastAction,
+  ToastTimer,
 } from './AuthPage.styles';
 
 export default function AuthPage() {
@@ -24,12 +31,20 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const [showToast, setShowToast] = useState(false);
+
   const { login, register } = useAuth();
 
   const clearFields = () => {
     setUsername('');
     setPassword('');
   };
+
+  useEffect(() => {
+    if (!showToast) return;
+    const t = setTimeout(() => setShowToast(false), 2600);
+    return () => clearTimeout(t);
+  }, [showToast]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,7 +56,7 @@ export default function AuthPage() {
         await login(username, password);
       } else {
         await register(username, password);
-        // Após cadastro: volta para Login e limpa os campos
+        setShowToast(true);
         setIsLogin(true);
         clearFields();
       }
@@ -53,65 +68,76 @@ export default function AuthPage() {
   };
 
   return (
-    <AuthContainer>
-      <AuthBox>
-        <Header>
-          <Title>{isLogin ? 'Entrar' : 'Criar conta'}</Title>
-          <Subtitle>
-            {isLogin
-              ? 'Acesse para jogar com outros usuários'
-              : 'Crie sua conta para começar a jogar'}
-          </Subtitle>
-        </Header>
+    <>
+
+      {showToast && (
+        <ToastCorner>
+          <ToastCard>
+            <ToastIconCircle>✔</ToastIconCircle>
+            <ToastTitle>Oh Yeah!</ToastTitle>
+            <ToastMessage>Jogador criado com sucesso.</ToastMessage>
+            <ToastAction onClick={() => setShowToast(false)}>Ok</ToastAction>
+            <ToastTimer />
+          </ToastCard>
+        </ToastCorner>
+      )}
+
+      <AuthContainer>
+        <AuthBox>
+          <Header>
+            <Title>{isLogin ? 'Entrar' : 'Criar conta'}</Title>
+            <Subtitle>
+              {isLogin
+                ? 'Acesse para jogar com outros usuários'
+                : 'Crie sua conta para começar a jogar'}
+            </Subtitle>
+          </Header>
         
-        <Form onSubmit={handleSubmit}>
-          <InputGroup>
-            <Input
-              id="username"
-              name="username"
-              type="text"
-              required
-              placeholder="Nome de usuário"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              required
-              placeholder="Senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </InputGroup>
+          <Form onSubmit={handleSubmit}>
+            <InputGroup>
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                required
+                placeholder="Nome de usuário"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </InputGroup>
 
-          {error && (
-            <ErrorMessage>
-              {error}
-            </ErrorMessage>
-          )}
+            {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <div>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Cadastrar')}
-            </Button>
-          </div>
+            <div>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Cadastrar')}
+              </Button>
+            </div>
 
-          <ToggleContainer>
-            <ToggleButton
-              type="button"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError('');
-                clearFields(); // limpa ao alternar
-              }}
-            >
-              {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entre'}
-            </ToggleButton>
-          </ToggleContainer>
-        </Form>
-      </AuthBox>
-    </AuthContainer>
+            <ToggleContainer>
+              <ToggleButton
+                type="button"
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setError('');
+                  clearFields(); 
+                }}
+              >
+                {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entre'}
+              </ToggleButton>
+            </ToggleContainer>
+          </Form>
+        </AuthBox>
+      </AuthContainer>
+    </>
   );
 }
