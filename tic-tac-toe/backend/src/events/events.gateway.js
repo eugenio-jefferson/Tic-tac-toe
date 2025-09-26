@@ -45,6 +45,13 @@ class EventsGateway {
     this.setupEventListeners();
   }
 
+   parseGameBoard(game) {
+    if (game && typeof game.board === 'string') {
+      return { ...game, board: JSON.parse(game.board) };
+    }
+    return game;
+  }
+
   setupEventListeners() {
     this.eventBusService.onUserOnline((data) => {
       this.server.emit("user:online", data);
@@ -66,7 +73,11 @@ class EventsGateway {
         data.invitation.fromUserId
       );
       if (fromUserSocketId) {
-        this.server.to(fromUserSocketId).emit("game:invitation:accepted", data);
+        const payload = {
+          ...data,
+          game: this.parseGameBoard(data.game),
+        };
+        this.server.to(fromUserSocketId).emit("game:invitation:accepted", payload);
       }
     });
 
@@ -80,12 +91,14 @@ class EventsGateway {
     this.eventBusService.onGameStarted((data) => {
       const player1SocketId = this.connectedUsers.get(data.player1Id);
       const player2SocketId = this.connectedUsers.get(data.player2Id);
+      
+      const parsedGame = this.parseGameBoard(data);
 
       if (player1SocketId) {
-        this.server.to(player1SocketId).emit("game:started", data);
+        this.server.to(player1SocketId).emit("game:started", parsedGame);
       }
       if (player2SocketId) {
-        this.server.to(player2SocketId).emit("game:started", data);
+        this.server.to(player2SocketId).emit("game:started", parsedGame);
       }
     });
 
@@ -93,11 +106,16 @@ class EventsGateway {
       const player1SocketId = this.connectedUsers.get(data.game.player1Id);
       const player2SocketId = this.connectedUsers.get(data.game.player2Id);
 
+      const payload = {
+        ...data,
+        game: this.parseGameBoard(data.game),
+      };
+
       if (player1SocketId) {
-        this.server.to(player1SocketId).emit("game:move:made", data);
+        this.server.to(player1SocketId).emit("game:move:made", payload);
       }
       if (player2SocketId) {
-        this.server.to(player2SocketId).emit("game:move:made", data);
+        this.server.to(player2SocketId).emit("game:move:made", payload);
       }
     });
 
@@ -105,11 +123,13 @@ class EventsGateway {
       const player1SocketId = this.connectedUsers.get(data.player1Id);
       const player2SocketId = this.connectedUsers.get(data.player2Id);
 
+      const parsedGame = this.parseGameBoard(data);
+
       if (player1SocketId) {
-        this.server.to(player1SocketId).emit("game:finished", data);
+        this.server.to(player1SocketId).emit("game:finished", parsedGame);
       }
       if (player2SocketId) {
-        this.server.to(player2SocketId).emit("game:finished", data);
+        this.server.to(player2SocketId).emit("game:finished", parsedGame);
       }
     });
 
@@ -117,11 +137,13 @@ class EventsGateway {
       const player1SocketId = this.connectedUsers.get(data.player1Id);
       const player2SocketId = this.connectedUsers.get(data.player2Id);
 
+      const parsedGame = this.parseGameBoard(data);
+      
       if (player1SocketId) {
-        this.server.to(player1SocketId).emit("game:abandoned", data);
+        this.server.to(player1SocketId).emit("game:abandoned", parsedGame);
       }
       if (player2SocketId) {
-        this.server.to(player2SocketId).emit("game:abandoned", data);
+        this.server.to(player2SocketId).emit("game:abandoned", parsedGame);
       }
     });
   }

@@ -9,6 +9,7 @@ const { PrismaService } = require("../database/prisma.service");
 const { GameLogicService } = require("./game-logic.service");
 const { GameFactory } = require("./game.factory");
 const { LogsService } = require("../logs/logs.service");
+const { EventBusService } = require("../events/event-bus.service");
 
 @Injectable()
 class GamesService {
@@ -16,15 +17,17 @@ class GamesService {
     @Inject(PrismaService) prisma,
     @Inject(GameLogicService) gameLogicService,
     @Inject(GameFactory)gameFactory,
-    @Inject(LogsService)logsService
+    @Inject(LogsService)logsService,
+    @Inject(EventBusService) eventBusService,
   ) {
     this.prisma = prisma;
     this.gameLogicService = gameLogicService;
     this.gameFactory = gameFactory;
     this.logsService = logsService;
+    this.eventBusService = eventBusService;
   }
 
-  async createInvitation(fromUserId, toUserId) {
+   async createInvitation(fromUserId, toUserId) {
     if (fromUserId === toUserId) {
       throw new BadRequestException("Cannot invite yourself");
     }
@@ -43,14 +46,16 @@ class GamesService {
 
     const existingInvitation = await this.prisma.gameInvitation.findFirst({
       where: {
-        fromUserId,
-        toUserId,
         status: "PENDING",
+        OR: [
+          { fromUserId: fromUserId, toUserId: toUserId },
+          { fromUserId: toUserId, toUserId: fromUserId }, 
+        ],
       },
     });
 
     if (existingInvitation) {
-      throw new BadRequestException("Invitation already sent");
+      throw new BadRequestException("Você já convidou esse usuário");
     }
 
     const invitationData = this.gameFactory.createGameInvitation(
@@ -75,6 +80,8 @@ class GamesService {
       fromUserId,
       toUserId,
     });
+    
+    this.eventBusService.emitGameInvitationSent(invitation);
 
     return invitation;
   }
@@ -138,6 +145,8 @@ class GamesService {
       player1Id: game.player1Id,
       player2Id: game.player2Id,
     });
+    
+    this.eventBusService.emitGameInvitationAccepted(invitation, game);
 
     return {
       ...game,
@@ -162,7 +171,7 @@ class GamesService {
       throw new BadRequestException("Invitation is no longer pending");
     }
 
-    await this.prisma.gameInvitation.update({
+    const updatedInvitation = await this.prisma.gameInvitation.update({
       where: { id: invitationId },
       data: { status: "REJECTED" },
     });
@@ -172,6 +181,8 @@ class GamesService {
       fromUserId: invitation.fromUserId,
       toUserId: invitation.toUserId,
     });
+
+    this.eventBusService.emitGameInvitationRejected(updatedInvitation);
 
     return { message: "Invitation rejected" };
   }
