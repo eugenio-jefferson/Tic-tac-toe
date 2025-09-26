@@ -22,8 +22,6 @@ export function AuthProvider({ children }) {
         const profile = await apiClient.getProfile();
         setUser(profile);
         setIsAuthenticated(true);
-        
-        // Connect to socket
         socketClient.connect(token);
       }
     } catch (error) {
@@ -39,26 +37,18 @@ export function AuthProvider({ children }) {
       const response = await apiClient.login(username, password);
       setUser(response.user);
       setIsAuthenticated(true);
-      
-      // Connect to socket
       socketClient.connect(response.access_token);
-      
       return response;
     } catch (error) {
       throw error;
     }
   };
 
+  // >>> Ajuste: cadastro não autentica nem conecta socket
   const register = async (username, password) => {
     try {
       const response = await apiClient.register(username, password);
-      setUser(response.user);
-      setIsAuthenticated(true);
-      
-      // Connect to socket
-      socketClient.connect(response.access_token);
-      
-      return response;
+      return response; // Apenas retorna sucesso; UI alterna para Login
     } catch (error) {
       throw error;
     }
@@ -67,8 +57,8 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await apiClient.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
+    } catch (e) {
+      // ignora
     } finally {
       setUser(null);
       setIsAuthenticated(false);
@@ -99,4 +89,3 @@ export function useAuth() {
   }
   return context;
 }
-

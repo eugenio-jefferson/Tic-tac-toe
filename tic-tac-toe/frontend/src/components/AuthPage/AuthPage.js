@@ -26,6 +26,11 @@ export default function AuthPage() {
 
   const { login, register } = useAuth();
 
+  const clearFields = () => {
+    setUsername('');
+    setPassword('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -36,9 +41,12 @@ export default function AuthPage() {
         await login(username, password);
       } else {
         await register(username, password);
+        // Após cadastro: volta para Login e limpa os campos
+        setIsLogin(true);
+        clearFields();
       }
-    } catch (error) {
-      setError(error.message || 'Ocorreu um erro');
+    } catch (err) {
+      setError(err.message || 'Ocorreu um erro');
     } finally {
       setLoading(false);
     }
@@ -48,9 +56,11 @@ export default function AuthPage() {
     <AuthContainer>
       <AuthBox>
         <Header>
-          <Title>Jogo da Velha Multiplayer</Title>
+          <Title>{isLogin ? 'Entrar' : 'Criar conta'}</Title>
           <Subtitle>
-            {isLogin ? 'Entre na sua conta' : 'Crie uma nova conta'}
+            {isLogin
+              ? 'Acesse para jogar com outros usuários'
+              : 'Crie sua conta para começar a jogar'}
           </Subtitle>
         </Header>
         
@@ -84,7 +94,7 @@ export default function AuthPage() {
 
           <div>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Carregando...' : (isLogin ? 'Entrar' : 'Cadastrar')}
+              {loading ? 'Aguarde...' : (isLogin ? 'Entrar' : 'Cadastrar')}
             </Button>
           </div>
 
@@ -94,6 +104,7 @@ export default function AuthPage() {
               onClick={() => {
                 setIsLogin(!isLogin);
                 setError('');
+                clearFields(); // limpa ao alternar
               }}
             >
               {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entre'}
