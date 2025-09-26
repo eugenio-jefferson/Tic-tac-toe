@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { socketClient } from '@/lib/socket';
 import { apiClient } from '@/lib/api';
 import { useAuth } from './AuthContext';
@@ -15,66 +15,8 @@ export function GameProvider({ children }) {
   const [currentGame, setCurrentGame] = useState(null);
   const [gameHistory, setGameHistory] = useState([]);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadInitialData();
-      setupSocketListeners();
-    }
-
-    return () => {
-      cleanupSocketListeners();
-    };
-  }, [isAuthenticated]);
-
-  const loadInitialData = async () => {
-    try {
-      const [users, pending, sent, games] = await Promise.all([
-        apiClient.getOnlineUsers(),
-        apiClient.getPendingInvitations(),
-        apiClient.getSentInvitations(),
-        apiClient.getUserGames(),
-      ]);
-
-      setOnlineUsers(users);
-      setPendingInvitations(pending);
-      setSentInvitations(sent);
-      setGameHistory(games);
-
-      // Check for active game
-      const activeGame = games.find(game => game.status === 'IN_PROGRESS');
-      if (activeGame) {
-        setCurrentGame(activeGame);
-      }
-    } catch (error) {
-      console.error('Failed to load initial data:', error);
-    }
-  };
-
-  const setupSocketListeners = () => {
-    socketClient.on('user:online', handleUserOnline);
-    socketClient.on('user:offline', handleUserOffline);
-    socketClient.on('game:invitation:received', handleInvitationReceived);
-    socketClient.on('game:invitation:accepted', handleInvitationAccepted);
-    socketClient.on('game:invitation:rejected', handleInvitationRejected);
-    socketClient.on('game:started', handleGameStarted);
-    socketClient.on('game:move:made', handleMoveMade);
-    socketClient.on('game:finished', handleGameFinished);
-    socketClient.on('game:abandoned', handleGameAbandoned);
-  };
-
-  const cleanupSocketListeners = () => {
-    socketClient.off('user:online', handleUserOnline);
-    socketClient.off('user:offline', handleUserOffline);
-    socketClient.off('game:invitation:received', handleInvitationReceived);
-    socketClient.off('game:invitation:accepted', handleInvitationAccepted);
-    socketClient.off('game:invitation:rejected', handleInvitationRejected);
-    socketClient.off('game:started', handleGameStarted);
-    socketClient.off('game:move:made', handleMoveMade);
-    socketClient.off('game:finished', handleGameFinished);
-    socketClient.off('game:abandoned', handleGameAbandoned);
-  };
-
-  const handleUserOnline = (data) => {
+  const handleUserOnline = useCallback((data) => {
+    console.log('Socket event: user:online', data);
     setOnlineUsers(prev => {
       const exists = prev.find(u => u.id === data.userId);
       if (!exists) {
@@ -82,60 +24,134 @@ export function GameProvider({ children }) {
       }
       return prev.map(u => u.id === data.userId ? { ...u, isOnline: true } : u);
     });
-  };
+  }, []);
 
-  const handleUserOffline = (data) => {
+  const handleUserOffline = useCallback((data) => {
+    console.log('Socket event: user:offline', data);
     setOnlineUsers(prev => prev.filter(u => u.id !== data.userId));
-  };
+  }, []);
 
-  const handleInvitationReceived = (invitation) => {
+  const handleInvitationReceived = useCallback((invitation) => {
+    console.log('Socket event: game:invitation:received', invitation);
     setPendingInvitations(prev => [invitation, ...prev]);
-  };
+  }, []);
 
-  const handleInvitationAccepted = (data) => {
+  const handleInvitationAccepted = useCallback((data) => {
+    console.log('Socket event: game:invitation:accepted', data);
     setSentInvitations(prev => prev.filter(inv => inv.id !== data.invitation.id));
     setCurrentGame(data.game);
-  };
+  }, []);
 
-  const handleInvitationRejected = (data) => {
+  const handleInvitationRejected = useCallback((data) => {
+    console.log('Socket event: game:invitation:rejected', data);
     setSentInvitations(prev => prev.filter(inv => inv.id !== data.id));
-  };
+  }, []);
 
-  const handleGameStarted = (game) => {
+  const handleGameStarted = useCallback((game) => {
+    console.log('Socket event: game:started', game);
     setCurrentGame(game);
     setPendingInvitations(prev => prev.filter(inv => 
       inv.fromUserId !== game.player1Id || inv.toUserId !== game.player2Id
     ));
-  };
+  }, []);
 
-  const handleMoveMade = (data) => {
-    if (currentGame && currentGame.id === data.game.id) {
-      setCurrentGame(data.game);
+  const handleMoveMade = useCallback((data) => {
+    console.log('Socket event: game:move:made', data);
+    setCurrentGame(curr => (curr && curr.id === data.game.id ? data.game : curr));
+  }, []);
+
+  const handleGameFinished = useCallback((game) => {
+    console.log('Socket event: game:finished', game);
+    setCurrentGame(curr => (curr && curr.id === game.id ? game : curr));
+    setGameHistory(prev => [game, ...prev.filter(g => g.id !== game.id)]);
+  }, []);
+
+  const handleGameAbandoned = useCallback((game) => {
+    console.log('Socket event: game:abandoned', game);
+    setCurrentGame(curr => (curr && curr.id === game.id ? game : curr));
+    setGameHistory(prev => [game, ...prev.filter(g => g.id !== game.id)]);
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && socketClient.socket) {
+      console.log('Configurando listeners do socket no GameContext...');
+      
+      const socket = socketClient.socket;
+
+      socket.on('user:online', handleUserOnline);
+      socket.on('user:offline', handleUserOffline);
+      socket.on('game:invitation:received', handleInvitationReceived);
+      socket.on('game:invitation:accepted', handleInvitationAccepted);
+      socket.on('game:invitation:rejected', handleInvitationRejected);
+      socket.on('game:started', handleGameStarted);
+      socket.on('game:move:made', handleMoveMade);
+      socket.on('game:finished', handleGameFinished);
+      socket.on('game:abandoned', handleGameAbandoned);
+
+      return () => {
+        console.log('Limpando listeners do socket no GameContext...');
+        socket.off('user:online', handleUserOnline);
+        socket.off('user:offline', handleUserOffline);
+        socket.off('game:invitation:received', handleInvitationReceived);
+        socket.off('game:invitation:accepted', handleInvitationAccepted);
+        socket.off('game:invitation:rejected', handleInvitationRejected);
+        socket.off('game:started', handleGameStarted);
+        socket.off('game:move:made', handleMoveMade);
+        socket.off('game:finished', handleGameFinished);
+        socket.off('game:abandoned', handleGameAbandoned);
+      };
+    }
+  }, [
+    isAuthenticated,
+    handleUserOnline,
+    handleUserOffline,
+    handleInvitationReceived,
+    handleInvitationAccepted,
+    handleInvitationRejected,
+    handleGameStarted,
+    handleMoveMade,
+    handleGameFinished,
+    handleGameAbandoned
+  ]);
+  
+  const loadInitialData = async () => {
+    try {
+        const [users, pending, sent, games] = await Promise.all([
+            apiClient.getOnlineUsers(),
+            apiClient.getPendingInvitations(),
+            apiClient.getSentInvitations(),
+            apiClient.getUserGames(),
+        ]);
+        setOnlineUsers(users);
+        setPendingInvitations(pending);
+        setSentInvitations(sent);
+        setGameHistory(games);
+        const activeGame = games.find(game => game.status === 'IN_PROGRESS' || game.status === 'WAITING');
+        if (activeGame) {
+            setCurrentGame(activeGame);
+        }
+    } catch (error) {
+        console.error('Falha ao carregar dados iniciais:', error);
     }
   };
 
-  const handleGameFinished = (game) => {
-    if (currentGame && currentGame.id === game.id) {
-      setCurrentGame(game);
-      // Add to history
-      setGameHistory(prev => [game, ...prev.filter(g => g.id !== game.id)]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadInitialData();
     }
-  };
+  }, [isAuthenticated]);
 
-  const handleGameAbandoned = (game) => {
-    if (currentGame && currentGame.id === game.id) {
-      setCurrentGame(game);
-      // Add to history
-      setGameHistory(prev => [game, ...prev.filter(g => g.id !== game.id)]);
-    }
-  };
+
 
   const inviteUser = async (userId) => {
     try {
       const invitation = await apiClient.createInvitation(userId);
+      
       setSentInvitations(prev => [invitation, ...prev]);
+      
       return invitation;
     } catch (error) {
+      console.error("Falha ao enviar convite:", error);
       throw error;
     }
   };
@@ -161,30 +177,17 @@ export function GameProvider({ children }) {
   };
 
   const makeMove = async (position) => {
-    if (!currentGame) return;
-    
-    try {
-      const updatedGame = await apiClient.makeMove(currentGame.id, position);
-      setCurrentGame(updatedGame);
-      return updatedGame;
-    } catch (error) {
-      throw error;
+    if (currentGame) {
+      socketClient.makeMove(currentGame.id, position);
     }
   };
 
   const abandonGame = async () => {
-    if (!currentGame) return;
-    
-    try {
-      const updatedGame = await apiClient.abandonGame(currentGame.id);
-      setCurrentGame(updatedGame);
-      setGameHistory(prev => [updatedGame, ...prev.filter(g => g.id !== updatedGame.id)]);
-      return updatedGame;
-    } catch (error) {
-      throw error;
+    if (currentGame) {
+      socketClient.abandonGame(currentGame.id);
     }
   };
-
+  
   const value = {
     onlineUsers,
     pendingInvitations,
@@ -213,4 +216,3 @@ export function useGame() {
   }
   return context;
 }
-
