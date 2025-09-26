@@ -1,0 +1,16 @@
+services:
+  postgres_db:
+    image: postgres:latest
+    container_name: Tic-tac-toe
+    restart: ${RESTART_CONTAINER}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - ${DB_PORT}
+    volumes:
+      - tic_tac_toe_data:/var/lib/postgresql/data
+
+volumes:
+  tic_tac_toe_data:

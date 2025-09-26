@@ -8,6 +8,7 @@ build/
 # IDEs
 .vscode/
 .idea/
+*.code-workspace
 
 # Sistema operacional
 .DS_Store
