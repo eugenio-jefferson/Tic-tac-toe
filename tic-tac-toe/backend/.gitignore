@@ -4,6 +4,7 @@ node_modules/
 # Build
 dist/
 build/
+coverage/
 
 
 # Ambiente
@@ -17,6 +18,7 @@ build/
 # Arquivos temporários
 *.tmp
 *.swp
+package-lock.json
 
 # Sistema operacional
 Thumbs.db
