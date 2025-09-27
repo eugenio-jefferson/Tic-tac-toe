@@ -1,4 +1,3 @@
-// src/components/Dashboard.js
 'use client';
 
 import { useState } from 'react';
@@ -26,7 +25,7 @@ export default function Dashboard() {
   const { user, logout } = useAuth();
   const { currentGame } = useGame();
 
-  if (currentGame && currentGame.status === 'IN_PROGRESS') {
+  if (currentGame) {
     return <GameBoard />;
   }
 

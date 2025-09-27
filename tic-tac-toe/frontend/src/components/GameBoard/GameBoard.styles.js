@@ -132,3 +132,63 @@ export const Cell = styled.button`
     cursor: not-allowed;
   }
 `;
+
+const fadeInOverlay = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const slideInContent = keyframes`
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+`;
+
+export const GameOverOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: ${fadeInOverlay} 0.5s ease;
+`;
+
+export const GameOverContent = styled.div`
+  text-align: center;
+  animation: ${slideInContent} 0.5s ease 0.2s backwards;
+`;
+
+export const GameOverTitle = styled.h2`
+  font-size: 3rem;
+  font-weight: bold;
+  color: ${({ color }) => color || '#111827'};
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+export const BackToLobbyButton = styled.button`
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background-color: #4f46e5;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #4338ca;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+`;
