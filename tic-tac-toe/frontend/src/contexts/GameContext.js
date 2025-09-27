@@ -187,6 +187,11 @@ export function GameProvider({ children }) {
       socketClient.abandonGame(currentGame.id);
     }
   };
+
+   const leaveGame = () => {
+    setCurrentGame(null);
+    loadInitialData(); 
+  };
   
   const value = {
     onlineUsers,
@@ -199,6 +204,7 @@ export function GameProvider({ children }) {
     rejectInvitation,
     makeMove,
     abandonGame,
+    leaveGame,
     refreshData: loadInitialData,
   };
 

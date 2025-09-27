@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGame } from '@/contexts/GameContext';
-// Importando os ícones
+
 import {
   FaTrophy,
   FaSadTear,
@@ -26,11 +26,15 @@ import {
   GameBoardWrapper,
   GameBoardGrid,
   Cell,
+  GameOverOverlay,
+  GameOverContent,
+  GameOverTitle,
+  BackToLobbyButton,
 } from './GameBoard.styles';
 
 export default function GameBoard() {
   const { user } = useAuth();
-  const { currentGame, makeMove, abandonGame } = useGame();
+  const { currentGame, makeMove, abandonGame, leaveGame } = useGame();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -44,6 +48,8 @@ export default function GameBoard() {
 
   const isPlayer1 = currentGame.player1Id === user?.id;
   const isMyTurn = currentGame.currentPlayer === user?.id;
+  const isGameOver = currentGame.status === 'FINISHED' || currentGame.status === 'ABANDONED';
+
 
   const handleCellClick = async (position) => {
     if (!isMyTurn || currentGame.status !== 'IN_PROGRESS' || loading || currentGame.board[position] !== null) {
@@ -75,7 +81,6 @@ export default function GameBoard() {
   };
 
   const getGameStatusMessage = () => {
-    // Usando os ícones importados no lugar dos emojis
     if (currentGame.status === 'FINISHED') {
       if (currentGame.winner === user?.id) return { icon: <FaTrophy />, message: 'Você venceu!', color: '#16a34a' };
       if (currentGame.winner) return { icon: <FaSadTear />, message: 'Você perdeu!', color: '#dc2626' };
@@ -91,7 +96,7 @@ export default function GameBoard() {
 
   const statusMessage = getGameStatusMessage();
 
-  return (
+   return (
     <GameContainer>
       <Container>
         {error && <ErrorMessage>{error}</ErrorMessage>}
@@ -101,30 +106,31 @@ export default function GameBoard() {
             <Title>Jogo da Velha</Title>
             <button
               onClick={handleAbandonGame}
-              disabled={loading || currentGame.status !== 'IN_PROGRESS'}
+              disabled={loading || isGameOver} 
             >
               Abandonar Jogo
             </button>
           </HeaderTop>
           <PlayersInfo>
-            <PlayerBox active={isPlayer1}>
+            <PlayerBox active={isPlayer1 && isMyTurn && !isGameOver}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <PlayerName>{currentGame.player1.username} {isPlayer1 && '(Você)'}</PlayerName>
                 <PlayerSymbol symbol="X">X</PlayerSymbol>
               </div>
             </PlayerBox>
-            <PlayerBox active={!isPlayer1}>
+            <PlayerBox active={!isPlayer1 && isMyTurn && !isGameOver}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <PlayerName>{currentGame.player2.username} {!isPlayer1 && '(Você)'}</PlayerName>
                 <PlayerSymbol symbol="O">O</PlayerSymbol>
               </div>
             </PlayerBox>
           </PlayersInfo>
-          {/* Renderizando o ícone e a mensagem */}
-          <StatusMessage color={statusMessage.color}>
-            <span style={{ marginRight: '8px' }}>{statusMessage.icon}</span>
-            {statusMessage.message}
-          </StatusMessage>
+          {!isGameOver && (
+             <StatusMessage color={statusMessage.color}>
+              <span style={{ marginRight: '8px' }}>{statusMessage.icon}</span>
+              {statusMessage.message}
+            </StatusMessage>
+          )}
         </Header>
 
         <GameBoardWrapper>
@@ -133,13 +139,28 @@ export default function GameBoard() {
               <Cell
                 key={index}
                 onClick={() => handleCellClick(index)}
-                disabled={!isMyTurn || currentGame.status !== 'IN_PROGRESS' || cell !== null || loading}
+                disabled={!isMyTurn || isGameOver || cell !== null || loading}
                 className={cell ? cell.toLowerCase() : ''}
               >
                 {cell && <span className="symbol">{cell}</span>}
               </Cell>
             ))}
           </GameBoardGrid>
+          
+          {isGameOver && (
+            <GameOverOverlay>
+              <GameOverContent>
+                <GameOverTitle color={statusMessage.color}>
+                  {statusMessage.icon}
+                  {statusMessage.message}
+                </GameOverTitle>
+                <BackToLobbyButton onClick={leaveGame}>
+                  Voltar ao Lobby
+                </BackToLobbyButton>
+              </GameOverContent>
+            </GameOverOverlay>
+          )}
+
           {loading && <div style={{ marginTop: '1rem' }}>Carregando...</div>}
         </GameBoardWrapper>
       </Container>
