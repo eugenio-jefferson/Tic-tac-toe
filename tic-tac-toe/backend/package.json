@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node -r reflect-metadata/register dist/main",
+    "start": "nest start --preserveWatchOutput -r reflect-metadata/register",
     "start:dev": "nest start --watch --preserveWatchOutput -r reflect-metadata/register",
     "build": "echo 'No build step needed for JavaScript'",
     "test": "jest ./dist",
