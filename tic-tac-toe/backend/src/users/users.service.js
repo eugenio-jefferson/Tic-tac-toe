@@ -110,11 +110,21 @@ class UsersService {
     const users = await this.prisma.user.findMany({
       include: {
         gamesAsPlayer1: {
-          where: { status: "FINISHED" },
+          where: { 
+            OR: [
+              { status: "FINISHED" },
+              { status: "ABANDONED" },
+            ]
+           },
           select: { winner: true },
         },
         gamesAsPlayer2: {
-          where: { status: "FINISHED" },
+          where: { 
+            OR: [
+              { status: "FINISHED" },
+              { status: "ABANDONED" },
+            ]
+           },
           select: { winner: true },
         },
       },
