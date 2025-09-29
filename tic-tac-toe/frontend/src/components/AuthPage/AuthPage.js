@@ -88,7 +88,7 @@ export default function AuthPage() {
             <Title>{isLogin ? 'Entrar' : 'Criar conta'}</Title>
             <Subtitle>
               {isLogin
-                ? 'Acesse para jogar com outros usuários'
+                ? 'Acesse para jogar e virar lenda no mundo do X e O'
                 : 'Crie sua conta para começar a jogar'}
             </Subtitle>
           </Header>

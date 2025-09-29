@@ -1,20 +1,21 @@
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { GameProvider } from "@/contexts/GameContext";
 
-const inter = Inter({ subsets: ["latin"] });
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata = {
-  title: "Tic-Tac-Toe Multiplayer",
-  description:
-    "A distributed multiplayer tic-tac-toe game built with NestJS and Next.js",
+  title: "Tic-Tac-Toe"
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
+      <body className={poppins.className}>
         <AuthProvider>
           <GameProvider>{children}</GameProvider>
         </AuthProvider>
