@@ -1,19 +1,18 @@
 # Tic-Tac-Toe Multiplayer
 
-Um jogo da velha multiplayer em rede, desenvolvido com foco em arquitetura distribuída, comunicação em tempo real e boas práticas de segurança.
-O sistema permite cadastro e autenticação de usuários, criação de partidas, convites em tempo real, ranking e estatísticas.
+Uma aplicação interativa de jogo da velha desenvolvida com foco em arquitetura distribuída, comunicação em tempo real e segurança robusta. Este projeto oferece uma experiência completa de jogo multiplayer online, permitindo que usuários se conectem, desafiem amigos e acompanhem seu desempenho em um ambiente seguro e dinâmico.
+
 ---
 ## Tecnologias
 ### Backend
 
-* NestJS (JavaScript) – Framework Node.js
+* NestJS – Framework Node.js
 * Prisma ORM – Mapeamento objeto-relacional
 * Socket.IO – Comunicação em tempo real via WebSockets
 * JWT – Autenticação baseada em tokens
-* bcrypt – Hash de senhas
 
 ### Frontend
-* Next.js (JavaScript) – Framework React
+* Next.js – Framework React
 * React – Interfaces de usuário
 * Socket.IO Client – Cliente WebSocket
 * CSS Modules – Estilização modular

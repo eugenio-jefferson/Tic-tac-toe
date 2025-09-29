@@ -4,6 +4,8 @@ export const GameContainer = styled.div`
   min-height: 100vh;
   background-color: #f9fafb;
   padding: 2rem 1rem;
+  background-image: url('/xo_grid1.svg');
+
 `;
 
 export const Container = styled.div`
@@ -41,11 +43,29 @@ export const Title = styled.h1`
   color: #111827;
 `;
 
+export const ButtonExitGame = styled.button`
+  background-color: #6b7280;
+  color: white;
+  padding: 0.5rem 0.5rem;
+  border: none;
+  border-radius: 0.275rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  &:hover {
+    background-color: #4b5563;
+  }
+
+`
+
 export const PlayersInfo = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-bottom: 1rem;
+  color: #374151;
 `;
 
 export const PlayerBox = styled.div`
@@ -121,7 +141,7 @@ export const Cell = styled.button`
     animation: ${fadeIn} 0.3s ease;
   }
 
-  &.x { color: #e74c3c; }
+  &.x { color: #d10000ff; }
   &.o { color: #3498db; }
 
   &:hover:not(:disabled) {

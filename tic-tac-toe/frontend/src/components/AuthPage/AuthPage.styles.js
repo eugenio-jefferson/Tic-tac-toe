@@ -1,11 +1,12 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes } from "styled-components";
 
 export const AuthContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #eef2ff, #f9fafb);
+  background: #f3f4f6;
+  background-image: url('/xo_grid.svg');
   padding: 3rem 1rem;
 `;
 
@@ -25,15 +26,15 @@ export const Header = styled.div`
 export const Title = styled.h2`
   margin-top: 1.5rem;
   text-align: center;
-  font-size: 1.875rem;
+  font-size: 1.975rem;
   font-weight: 800;
-  color: #111827;
+  color: #000000ff;
 `;
 
 export const Subtitle = styled.p`
   margin-top: 0.5rem;
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 0.90rem;
   color: #6b7280;
 `;
 
@@ -162,7 +163,7 @@ export const ToastCard = styled.div`
   border-radius: 14px;
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
   padding: 14px 16px;
   display: grid;
   grid-template-columns: 40px 1fr auto;
@@ -177,7 +178,7 @@ export const ToastIconCircle = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 999px;
-  border: 2px solid #16a34a;   /* verde */
+  border: 2px solid #16a34a; /* verde */
   color: #16a34a;
   display: flex;
   align-items: center;
@@ -188,7 +189,7 @@ export const ToastIconCircle = styled.div`
 export const ToastTitle = styled.div`
   font-weight: 700;
   font-size: 1rem;
-  color: #065f46;              /* verde escuro */
+  color: #065f46; /* verde escuro */
   line-height: 1.2;
 `;
 
@@ -225,9 +226,11 @@ export const ToastTimer = styled.div`
   overflow: hidden;
 
   &::after {
-    content: '';
+    content: "";
     position: absolute;
-    left: 0; top: 0; bottom: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
     background: #16a34a;
     width: 100%;
     animation: ${toastBar} 2.6s linear forwards;

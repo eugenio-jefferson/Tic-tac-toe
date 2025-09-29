@@ -30,6 +30,7 @@ import {
   GameOverContent,
   GameOverTitle,
   BackToLobbyButton,
+  ButtonExitGame,
 } from './GameBoard.styles';
 
 export default function GameBoard() {
@@ -103,13 +104,13 @@ export default function GameBoard() {
 
         <Header>
           <HeaderTop>
-            <Title>Jogo da Velha</Title>
-            <button
+            <Title>JOGO DA VELHA</Title>
+            <ButtonExitGame
               onClick={handleAbandonGame}
               disabled={loading || isGameOver} 
             >
               Abandonar Jogo
-            </button>
+            </ButtonExitGame>
           </HeaderTop>
           <PlayersInfo>
             <PlayerBox active={isPlayer1 && isMyTurn && !isGameOver}>
