@@ -53,7 +53,9 @@ export const Tbody = styled.tbody`
   }
 `;
 
-export const Tr = styled.tr`
+export const Tr = styled.tr.withConfig({
+  shouldForwardProp: (prop) => !prop.startsWith('$'),
+})`
   background-color: ${({ $highlight }) => $highlight ? '#fefce8' : 'transparent'};
 `;
 
@@ -73,7 +75,9 @@ export const PlayerInfo = styled.div`
   gap: 0.5rem;
 `;
 
-export const StatusIndicator = styled.div`
+export const StatusIndicator = styled.div.withConfig({
+  shouldForwardProp: (prop) => !prop.startsWith('$'),
+})`
   width: 8px;
   height: 8px;
   border-radius: 50%;
