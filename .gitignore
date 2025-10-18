@@ -4,6 +4,7 @@ dist/
 build/
 .env
 *.log
+package-lock.json
 
 # IDEs
 .vscode/

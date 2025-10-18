@@ -9,6 +9,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+package-lock.json
 
 # testing
 /coverage
@@ -19,6 +20,7 @@
 
 # production
 /build
+.swc
 
 # misc
 .DS_Store
