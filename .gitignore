@@ -1,0 +1,27 @@
+# Node.js
+node_modules/
+dist/
+build/
+.env
+*.log
+package-lock.json
+
+# IDEs
+.vscode/
+.idea/
+*.code-workspace
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# next.js
+/.next/
+/out/
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+
+*.pem
