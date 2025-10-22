@@ -49,7 +49,7 @@ class AuthService {
           username: user.username,
         }
       );
-S
+
       const payload = { sub: user.id, username: user.username };
       const token = await this.jwtService.signAsync(payload);
 
