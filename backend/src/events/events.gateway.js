@@ -180,11 +180,15 @@ class EventsGateway {
 
       client.emit("connected", { userId, username });
 
-      await this.logsService.logEvent("USER_CONNECTED", {
-        userId,
-        username,
-        socketId: client.id,
-      });
+      await this.logsService.logEvent(
+        "USER_CONNECTED",
+        `Usuário '${username}' (ID: ${userId}) conectado com socket ${client.id}.`,
+        {
+          userId,
+          username,
+          socketId: client.id,
+        }
+      );
     } catch (error) {
       this.logger.error(`Connection error for client ${client.id}:`, error);
       client.disconnect();
@@ -212,10 +216,14 @@ class EventsGateway {
             this.logger.log(
               `User ${user.username} (${userId}) is now offline.`
             );
-            await this.logsService.logEvent("USER_DISCONNECTED", {
-              userId,
-              username: user.username,
-            });
+            await this.logsService.logEvent(
+              "USER_DISCONNECTED",
+              `Usuário '${user.username}' (ID: ${userId}) desconectado.`,
+              {
+                userId,
+                username: user.username,
+              }
+            );
           }
         } else {
           this.connectedUsers.set(userId, userSockets[0][0]); 
@@ -308,7 +316,6 @@ class EventsGateway {
     client.emit("pong", { timestamp: new Date().toISOString() });
   }
 
-  // Get connected users count
   getConnectedUsersCount() {
     return this.connectedUsers.size;
   }

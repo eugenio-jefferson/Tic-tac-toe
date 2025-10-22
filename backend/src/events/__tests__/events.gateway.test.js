@@ -75,11 +75,15 @@ describe("EventsGateway", () => {
     expect(usersService.updateOnlineStatus).toHaveBeenCalledWith("testUserId", true);
     expect(eventBusService.emitUserOnline).toHaveBeenCalledWith("testUserId", "testUsername");
     expect(client.emit).toHaveBeenCalledWith("connected", { userId: "testUserId", username: "testUsername" });
-    expect(logsService.logEvent).toHaveBeenCalledWith("USER_CONNECTED", {
-      userId: "testUserId",
-      username: "testUsername",
-      socketId: "test",
-    });
+    expect(logsService.logEvent).toHaveBeenCalledWith(
+      "USER_CONNECTED",
+      expect.any(String),
+      {
+        userId: "testUserId",
+        username: "testUsername",
+        socketId: "test",
+      }
+    );
   });
 
   it("should handle disconnect", async () => {
@@ -95,9 +99,13 @@ describe("EventsGateway", () => {
 
     expect(usersService.updateOnlineStatus).toHaveBeenCalledWith("testUserId", false);
     expect(eventBusService.emitUserOffline).toHaveBeenCalledWith("testUserId", "testUsername");
-    expect(logsService.logEvent).toHaveBeenCalledWith("USER_DISCONNECTED", {
-      userId: "testUserId",
-      username: "testUsername",
-    });
+    expect(logsService.logEvent).toHaveBeenCalledWith(
+      "USER_DISCONNECTED",
+      expect.any(String),
+      {
+        userId: "testUserId",
+        username: "testUsername",
+      }
+    );
   });
 });

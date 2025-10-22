@@ -82,7 +82,7 @@ export const PlayerName = styled.span`
 export const PlayerSymbol = styled.span`
   font-size: 1.5rem;
   font-weight: bold;
-  color: ${({ symbol }) => symbol === 'X' ? '#ef4444' : '#3b82f6'};
+  color: ${({ symbol }) => symbol === 'X' ? '#038d36ff' : '#000000ff'};
 `;
 
 export const StatusMessage = styled.p`
@@ -109,7 +109,7 @@ export const GameBoardGrid = styled.div`
   gap: 10px;
   width: 300px;
   height: 300px;
-  background-color: #333;
+  background-color: #818181ff;
   border-radius: 8px;
   padding: 10px;
 `;
@@ -141,8 +141,8 @@ export const Cell = styled.button`
     animation: ${fadeIn} 0.3s ease;
   }
 
-  &.x { color: #d10000ff; }
-  &.o { color: #3498db; }
+  &.x { color: #038d36ff; }
+  &.o { color: #000000ff; }
 
   &:hover:not(:disabled) {
     background-color: #f0f0f0;

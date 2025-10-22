@@ -41,11 +41,15 @@ class AuthService {
         password: hashedPassword,
       });
 
-      await this.logsService.logEvent("USER_REGISTERED", {
-        userId: user.id,
-        username: user.username,
-      });
-
+      await this.logsService.logEvent(
+        "USER_REGISTERED",
+        `Usuário '${user.username}' (ID: ${user.id}) registrado.`,
+        {
+          userId: user.id,
+          username: user.username,
+        }
+      );
+S
       const payload = { sub: user.id, username: user.username };
       const token = await this.jwtService.signAsync(payload);
 
@@ -82,10 +86,14 @@ class AuthService {
 
       await this.usersService.updateOnlineStatus(user.id, true);
 
-      await this.logsService.logEvent("USER_LOGIN", {
-        userId: user.id,
-        username: user.username,
-      });
+      await this.logsService.logEvent(
+        "USER_LOGIN",
+        `Usuário '${user.username}' (ID: ${user.id}) logado.`,
+        {
+          userId: user.id,
+          username: user.username,
+        }
+      );
 
       const payload = { sub: user.id, username: user.username };
       const token = await this.jwtService.signAsync(payload);
@@ -111,7 +119,11 @@ class AuthService {
     try {
       await this.usersService.updateOnlineStatus(userId, false);
 
-      await this.logsService.logEvent("USER_LOGOUT", { userId });
+      await this.logsService.logEvent(
+        "USER_LOGOUT",
+        `Usuário (ID: ${userId}) deslogado.`,
+        { userId }
+      );
 
       return { message: "Logged out successfully" };
     } catch (error) {

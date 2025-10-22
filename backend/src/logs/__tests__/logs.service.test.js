@@ -22,13 +22,15 @@ describe("LogsService", () => {
     it("should call prisma.log.create with the correct parameters", async () => {
       const type = "EVENT";
       const eventType = "TEST_EVENT";
+      const message = "This is a test event message";
       const eventData = { key: "value" };
       
-      await logsService.logEvent(eventType, eventData);
+      await logsService.logEvent(eventType, message, eventData);
       expect(prismaService.log.create).toHaveBeenCalledWith({
         data: {
           type,
           eventType,
+          message,
           data: JSON.stringify(eventData),
           timestamp: expect.any(Date),
         },
@@ -41,13 +43,15 @@ describe("LogsService", () => {
       const type = "GAME_EVENT";
       const gameId = 1;
       const eventType = "TEST_GAME_EVENT";
+      const message = "This is a test game event message";
       const eventData = { key: "value" };
-      await logsService.logGameEvent(gameId, eventType, eventData);
+      await logsService.logGameEvent(gameId, eventType, message, eventData);
       expect(prismaService.log.create).toHaveBeenCalledWith({
         data: {
           type,
           gameId,
           eventType,
+          message,
           data: JSON.stringify(eventData),
           timestamp: expect.any(Date),
         },

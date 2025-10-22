@@ -75,11 +75,15 @@ class GamesService {
       },
     });
 
-    await this.logsService.logEvent("GAME_INVITATION_CREATED", {
-      invitationId: invitation.id,
-      fromUserId,
-      toUserId,
-    });
+    await this.logsService.logEvent(
+      "GAME_INVITATION_CREATED",
+      `Convite de jogo criado de '${fromUserId}' para '${toUserId}' (ID: ${invitation.id}).`,
+      {
+        invitationId: invitation.id,
+        fromUserId,
+        toUserId,
+      }
+    );
     
     this.eventBusService.emitGameInvitationSent(invitation);
 
@@ -141,10 +145,15 @@ class GamesService {
       },
     });
 
-    await this.logsService.logGameEvent(game.id, "GAME_STARTED", {
-      player1Id: game.player1Id,
-      player2Id: game.player2Id,
-    });
+    await this.logsService.logGameEvent(
+      game.id,
+      "GAME_STARTED",
+      `Jogo (ID: ${game.id}) iniciado entre '${game.player1.username}' (ID: ${game.player1Id}) e '${game.player2.username}' (ID: ${game.player2Id}).`,
+      {
+        player1Id: game.player1Id,
+        player2Id: game.player2Id,
+      }
+    );
     
     this.eventBusService.emitGameInvitationAccepted(invitation, game);
 
@@ -176,11 +185,15 @@ class GamesService {
       data: { status: "REJECTED" },
     });
 
-    await this.logsService.logEvent("GAME_INVITATION_REJECTED", {
-      invitationId,
-      fromUserId: invitation.fromUserId,
-      toUserId: invitation.toUserId,
-    });
+    await this.logsService.logEvent(
+      "GAME_INVITATION_REJECTED",
+      `Convite de jogo (ID: ${invitationId}) rejeitado por '${userId}'.`,
+      {
+        invitationId,
+        fromUserId: invitation.fromUserId,
+        toUserId: invitation.toUserId,
+      }
+    );
 
     this.eventBusService.emitGameInvitationRejected(updatedInvitation);
 
@@ -255,18 +268,28 @@ class GamesService {
       },
     });
 
-    await this.logsService.logGameEvent(gameId, "MOVE_MADE", {
-      playerId,
-      position,
-      symbol,
-      gameStatus: gameStatus.status,
-    });
+    await this.logsService.logGameEvent(
+      gameId,
+      "MOVE_MADE",
+      `Jogador (ID: ${playerId}) fez uma jogada na posição ${position} com o símbolo '${symbol}'.`,
+      {
+        playerId,
+        position,
+        symbol,
+        gameStatus: gameStatus.status,
+      }
+    );
 
     if (gameStatus.status === "FINISHED") {
-      await this.logsService.logGameEvent(gameId, "GAME_FINISHED", {
-        winner: updatedGame.winner,
-        isDraw: gameStatus.isDraw,
-      });
+      await this.logsService.logGameEvent(
+        gameId,
+        "GAME_FINISHED",
+        `Jogo (ID: ${gameId}) finalizado. Vencedor: ${updatedGame.winner ? `Jogador (ID: ${updatedGame.winner})` : 'Empate'}.`,
+        {
+          winner: updatedGame.winner,
+          isDraw: gameStatus.isDraw,
+        }
+      );
     }
 
     return {
@@ -317,10 +340,15 @@ class GamesService {
       },
     });
 
-    await this.logsService.logGameEvent(gameId, "GAME_ABANDONED", {
-      abandonedBy: playerId,
-      winner: winnerId,
-    });
+    await this.logsService.logGameEvent(
+      gameId,
+      "GAME_ABANDONED",
+      `Jogo (ID: ${gameId}) abandonado por jogador (ID: ${playerId}). Vencedor: Jogador (ID: ${winnerId}).`,
+      {
+        abandonedBy: playerId,
+        winner: winnerId,
+      }
+    );
 
     return {
       ...updatedGame,
