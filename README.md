@@ -29,6 +29,7 @@ Uma aplicação interativa de jogo da velha desenvolvida com foco em arquitetura
 * npm ou yarn
 * Docker e Docker Compose
 * Git
+* mkcert
 
 ---
 
@@ -75,7 +76,7 @@ PORT=3001
 NODE_ENV=development
 
 # CORS
-CORS_ORIGIN="http://localhost:3000"
+CORS_ORIGIN="https://localhost:3000"
 ```
 
 #### Caso a porta 5432 já esteja em uso:
@@ -117,8 +118,18 @@ Crie um arquivo `.env.local` em `frontend` com:
 
 ```env
 # Backend API
-NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_SOCKET_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=https://localhost:3001/api
+NEXT_PUBLIC_SOCKET_URL=https://localhost:3001
+```
+
+---
+
+### 6. Geração do certificado TLS
+
+Dentro do diretório `Tic-tac-toe`, execute esse comando:
+
+```bash
+ mkcert -key-file key.pem -cert-file cert.pem localhost 127.0.0.1
 ```
 
 ---
@@ -222,7 +233,7 @@ Este projeto foi desenvolvido para fins educacionais e como demonstração de bo
 ## Contribuidores
 
 * [Erica](https://github.com/ericafalmeid)
-* [Eugenio](https://github.com/eugenio-jefferson)
+* [Eugênio](https://github.com/eugenio-jefferson)
 * [Akyssa](https://github.com/akyssaeduarda)
 
 ---
