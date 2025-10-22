@@ -4,6 +4,7 @@ dist/
 build/
 .env
 *.log
+package-lock.json
 
 # IDEs
 .vscode/
@@ -21,3 +22,6 @@ Thumbs.db
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+*.pem
