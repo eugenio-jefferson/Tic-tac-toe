@@ -1,10 +1,8 @@
-const { Module } = require('@nestjs/common');
-const { LogsService } = require('./logs.service');
+import { Module } from "@nestjs/common";
+import { LogsService } from "./logs.service";
 
 @Module({
   providers: [LogsService],
   exports: [LogsService],
 })
-class LogsModule {}
-
-module.exports = { LogsModule };
+export class LogsModule {}

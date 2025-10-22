@@ -8,21 +8,22 @@ class LogsService {
     this.logger = new Logger(LogsService.name);
   }
 
-  async logEvent(eventType, data = {}) {
+  async logEvent(eventType, message, data = {}) {
     try {
       const logEntry = await this.prisma.log.create({
         data: {
           type: "EVENT",
           eventType,
+          message,
           data: JSON.stringify(data),
           timestamp: new Date(),
         },
       });
 
-      this.logger.log(`Event logged: ${eventType}`, data);
+      this.logger.log(`Event logged: ${eventType} - ${message}`, data);
       return logEntry;
     } catch (error) {
-      this.logger.error(`Failed to log event: ${eventType}`, error);
+      this.logger.error(`Failed to log event: ${eventType} - ${message}`, error);
     }
   }
 
@@ -45,12 +46,13 @@ class LogsService {
     }
   }
 
-  async logGameEvent(gameId, eventType, data = {}) {
+  async logGameEvent(gameId, eventType, message, data = {}) {
     try {
       const logEntry = await this.prisma.log.create({
         data: {
           type: "GAME_EVENT",
           eventType,
+          message,
           gameId,
           data: JSON.stringify(data),
           timestamp: new Date(),
@@ -58,12 +60,12 @@ class LogsService {
       });
 
       this.logger.log(
-        `Game event logged: ${eventType} for game ${gameId}`,
+        `Game event logged: ${eventType} - ${message} for game ${gameId}`,
         data
       );
       return logEntry;
     } catch (error) {
-      this.logger.error(`Failed to log game event: ${eventType}`, error);
+      this.logger.error(`Failed to log game event: ${eventType} - ${message}`, error);
     }
   }
 
